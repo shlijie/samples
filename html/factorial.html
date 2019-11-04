@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>spin</title>
+  </head>
+  <style type="text/css">
+  </style>
+  <body>
+    <div class="container">
+      
+   </div>
+	</body>
+	<script>
+		function factorialA(n) {
+			if (n===1) return 1;
+			return n * factorialA(n-1);
+		}
+
+		function tailFactorial(n, total) {
+			if (n===1) return total;
+			return tailFactorial(n-1, n*total);
+		}
+
+		function factorialB(n) {
+			return tailFactorial(n, 1);
+		}
+
+		var now1 = window.performance.now()
+		var a = factorialA(10)
+		var now2 = window.performance.now()
+		var b = factorialB(10, 1)
+		var now3 = window.performance.now()
+		console.log(now2 - now1)
+		console.log(a)
+		console.log(now3 - now2)
+		console.log(b)
+
+	</script>
+</html>

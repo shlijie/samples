@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>spin</title>
+  </head>
+  <style type="text/css">
+
+
+  </style>
+  <body>
+    <div class="container">
+      
+   	</div>
+		<script>
+			/*判断客户端*/
+			judgeClient = () => {
+				let u = navigator.userAgent;
+				let client = '';
+				if (/(iPhone|iPad|iPod|iOS)/i.test(u)) {  //判断iPhone|iPad|iPod|iOS
+					client = 'iOS';
+				} else if (/(Android)/i.test(u)) {  //判断Android
+					client = 'Android';
+				} else {
+					client = 'PC';
+				}
+				return client;
+			}
+
+			let client = judgeClient()
+
+			let url = 'https://www.quantumvectorcap.com'
+			if (client === 'iOS') {
+				url = 'https://apps.apple.com/cn/app/%E9%87%8F%E6%A1%A5App/id1473080743'
+			} else if (client === 'Android') {
+				url = 'https://m.quantumvectorcap.com/static/qvapp-release-20190726.apk'
+			}
+			window.location.href = url
+
+		</script>
+  </body>
+
+	
+</html>
