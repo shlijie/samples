@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 # y = (x*x-3*x+2)/(x-2)
 # 指数函数
 # y = np.exp(x)
-# 三角函数
+
+# 三角函数 Trigonometric functions
 # y = np.sin(x)
 # y = np.cos(x)
 # y = np.tan(x)
