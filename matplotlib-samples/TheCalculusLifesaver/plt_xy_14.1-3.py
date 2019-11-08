@@ -27,8 +27,7 @@ ax.axis["y"].set_axis_direction("right")
 x = np.arange(-2,2,0.01)
 # x = np.linspace(-4, 4, 1000)
 #y数据
-y=(x-np.sin(x))/x*x*x
-# y=(1-np.cos(x))/3*x*x
+y=(np.power(x+32, 1/5)-2)/x
 
 #设置x、y坐标轴的范围
 plt.xlim(-2,2)
