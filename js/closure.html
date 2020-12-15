@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>closure</title>
+  </head>
+  <style type="text/css">
+	.container{
+		text-align: center;
+		background-color: #fff;
+		overflow: hidden;
+	}
+  </style>
+
+  <body>
+    <div class="container">
+    </div>
+    
+  </body>
+
+  <script>
+    const arr = [1,2,3,4]
+    for (var i=0; i<arr.length; i+=1) {
+      setTimeout(function() {
+        console.log('test1 ', i)
+      }, 1000)
+    }
+
+    // 使用closure
+    for (var i=0; i<arr.length; i+=1) {
+      setTimeout(function(i_local) {
+        return function() {
+          console.log('test2 ', i_local)
+        }
+      }(i), 1000)
+    }
+
+    // var改成let
+    for (let i=0; i<arr.length; i+=1) {
+      setTimeout(function() {
+        console.log('test3 ', i)
+      }, 1000)
+    }
+  </script>
+</html>

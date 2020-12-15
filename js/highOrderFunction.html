@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>High Order Function</title>
+    <style>
+        .wrapper {}
+
+        .dummy-body {
+            height: 2000px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="dummy-body">
+            dummy
+        </div>
+    </div>
+
+</body>
+<script>
+    'use strict';
+
+    /*
+     下面是个滚动事件中运用防抖的例子
+    */
+    function debounce(fn, wait) {
+        var timeout = null;
+        console.log('1', timeout, this)
+        return function (event) {
+            console.log('2', timeout, this, event)
+            if (timeout !== null) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(fn, wait);
+        }
+    }
+    // 处理函数
+    function handle() {
+        console.log(Math.random());
+    }
+    // 滚动事件
+    window.addEventListener('scroll', debounce(handle, 1000));
+
+    /*
+     带参数的防抖的例子
+    */
+    function debounceWithParam(fn, interval) {
+        let timer = null
+        console.log('1', timer, this)
+        return function () {
+            // 如果用户在设定的时间内再次触发,就清除掉
+            console.log('2', timer, this)
+            if (timer !== null) {
+                clearTimeout(timer)
+            }
+            timer = setTimeout(() => {
+                console.log('3', timer, this, arguments)
+                fn.apply(this, arguments)
+            }, interval);
+        }
+    }
+
+    function sum(a, b) {
+        console.log(a, b)
+        return a + b
+    }
+    const func = debounceWithParam(sum, 1000)
+
+    for (let i = 0; i < 10; i += 1) {
+        // 一个实例执行10遍，模拟重复执行的情况
+        func(i, i + 1)
+        // 生成了10个实例，达不到效果
+        // debounceWithParam(sum, 1000)(i, i+1)
+    }
+
+</script>
+
+<script>
+    /*
+      节流 指定时间间隔内只会执行一次任务
+    */
+    function throttle(fn, interval) {
+        let timer,
+            firstTime = true // 是否是第一次执行
+        return function () {
+            let _this = this
+            if (firstTime) {
+                fn.apply(_this, arguments) // 第一次不需要延迟执行
+                return firstTime = false
+            }
+            if (timer) { // 如果定时器还在 说明前一次还没有执行完
+                return false
+            }
+            timer = setTimeout(() => {
+                clearTimeout(timer)
+                timer = null
+                fn.apply(_this, arguments)
+            }, interval || 500);
+        }
+    }
+
+    // 不考虑定时器的情况 直接加一个节流阀
+    function throttle(fn, interval) {
+        let canRun = true //节流阀
+        return function () {
+            if (!canRun) {
+                return
+            }
+            canRun = false
+            setTimeout(() => {
+                fn.apply(this, arguments)
+                canRun = true
+            }, interval);
+        }
+    }
+    window.onresize = throttle(function () {
+        console.log(1)
+    }, 1000)
+</script>
+
+<script>
+    /*
+      惰性函数
+      当我们需要重复使用一个逻辑的时候，优化逻辑判断，提高 JavaScript 性能
+      原理：同名函数覆盖
+      使用场景：
+      频繁使用同一判断逻辑
+      只需要判断一次，后续使用环境稳定
+    */
+    function createXHR() {
+        var xhr
+        try {
+            xhr = new XMLHttpRequest()
+        } catch (e) {
+            handleErr(e)
+            try {
+                xhr = new ActiveXObject('Msxml2.XMLHTTP')
+            } catch (e) {
+                try {
+                    xhr = new ActiveXObject('Microsoft.XMLHTTP')
+                } catch (e) {
+                    xhr = null
+                }
+            }
+        }
+        return xhr
+    }
+
+    function handleErr(e) {
+        // do sth
+    }
+
+    // 惰性函数修改版：
+    function createXHR() {
+        var xhr
+        if (typeof XMLHttpRequest !== 'undefined') {
+            xhr = new XMLHttpRequest()
+        }
+        createXHR = function () {
+            return new XMLHttpRequest()
+        } else {
+            try {
+                xhr = new ActiveXObject('Msxml2.XMLHTTP')
+                createXHR = function () {
+                    return new ActiveXObject('Msxml2.XMLHTTP')
+                }
+            } catch (e) {
+                try {
+                    xhr = new ActiveXObject('Microsoft.XMLHTTP')
+                    createXHR = function () {
+                        return new ActiveXObject('Microsoft.XMLHTTP')
+                    }
+                } catch (e) {
+                    createXHR = function () {
+                        return null
+                    }
+                }
+            }
+        }
+        return xhr
+    }
+</script>
+
+<script>
+    /*
+        级联函数
+      其实就是链式调用，所以原理也就很简单：在每个方法中将对象本身 return 出去
+      假设我们有一个 Person 模板
+        优点：简化了函数调用的步骤，我们不需要再写一些重复的东西
+      缺点：占用了函数的返回值
+    */
+    function Person() { }
+    // 添加几个方法
+    Person.prototype = {
+        setName: function (name) {
+            this.name = name
+            return this //
+        },
+        setAge: function (age) {
+            this.age = age
+            return this
+        },
+        setSex: function (sex) {
+            this.sex = sex
+        },
+    }
+    // 别忘了重新指定一下构造函数
+    Person.constructor = Person
+    let person = new Person()
+    // 这样看起来做了很多重复的事情，稍微修改一下，在每个方法中将 this return 出来就可以达到 链式调用的效果
+    person.setName('游荡de蝌蚪')
+    person.setAge(18)
+    person.setSex('male')
+    // 修改之后
+    person.setName('游荡de蝌蚪').setAge(18).setSex('male')
+    console.log(person)
+</script>
+
+<script>
+    /*
+        柯里化
+        收集参数，延后执行，也可以称之为部分求值
+    */
+    function add(a, b) {
+        return a + b
+    }
+
+    // 简单的通用封装
+    function curry(fn) {
+        let args = Array.prototype.slice.call(arguments, 1)
+        return function () {
+            let _args = Array.prototype.slice.call(arguments)
+            let final = args.concat(_args)
+            return fn.apply(null, final)
+        }
+    }
+
+    // 对函数 add 柯里化
+    let adder = curry(add)
+    adder(1, 2)
+    // 或者
+    let adder = curry(add, 1)(2)
+    let adder = curry(add)(1, 2)
+
+    Function.prototype.mybind = function (fn) {
+        let args = Array.prototype.slice(arguments, 1)
+        let _this = this
+        return function () {
+            let _args = Array.prototype.slice(arguments)
+            let final = args.concat(_args)
+            return _this.apply(fn, final)
+        }
+    }
+
+    Function.prototype.mybind = function (fn) {
+        let _this = this
+        return function () {
+            return _this.apply(fn, arguments)
+        }
+    }
+
+    // 编写一个 add 函数，实现以下功能
+    add(1)(2)(3) // 6
+    add(1)(2, 3)(4) //10
+    add(1, 2)(3)(4, 5) // 15
+
+    function add() {
+        let args = Array.prototype.slice.call(arguments)
+        let adder = function () {
+            // 利用闭包的特性保存 args 并且收集参数
+            args = args.concat(Array.prototype.slice.call(arguments))
+            return adder
+        }
+        // 利用 toString 隐式转换的的特性返回最终计算的值
+        adder.toString = function () {
+            return args.reduce((a, b) => {
+                return a + b
+            })
+        }
+        return adder
+    }
+    add(1)(2)(3) // 6
+    add(1)(2, 3)(4) // 10
+    add(1, 2)(3)(4, 5) // 15
+
+    // 当然，我们也可以借助ES6的方法简化这个函数
+    function add1(...args) {
+        let adder = (..._args) => {
+            args = [...args, ..._args]
+            return adder
+        }
+        adder.toString = () => args.reduce((a, b) => a + b)
+        return adder
+    }
+
+    // 闭包，使用闭包的特性去保存和收集我们需要的参数
+    // 利用 toString 的隐式转换特性，最终拿到我们想要的结果
+</script>
+
+</html>
