@@ -1,7 +1,10 @@
 
 from __future__ import print_function
 
+# python 3.6
+# tensorflow 2.0.0
 import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
 import numpy
 import matplotlib.pyplot as plt
 rng = numpy.random
@@ -12,9 +15,9 @@ training_epochs = 10000
 display_step = 100
 
 # Training Data
-train_X = numpy.asarray([1,2,3,4,5,6,7,8,9,10])
-# train_X = numpy.asarray([2009,2010,2011,2012,2013,2014,2015,2016,2017,2018])
-train_Y = numpy.asarray([0.52,9.36,33.6,191,362,571,912.17,1207,1682,2135])
+train_X = numpy.asarray([1,2,3,4,5,6,7,8,9,10,11])
+# train_X = numpy.asarray([2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019])
+train_Y = numpy.asarray([0.52,9.36,33.6,191,362,571,912.17,1207,1682,2135,2684])
 n_samples = train_X.shape[0]
 
 # tf Graph Input
@@ -36,13 +39,15 @@ pred = tf.add(tf.multiply(tf.pow(X, 2), W_2), pred)
 cost = tf.reduce_sum(tf.pow(pred-Y, 2))/(2*n_samples)
 # Gradient descent
 #  Note, minimize() knows to modify W and b because Variable objects are trainable=True by default
-optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+# optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 
 # Initialize the variables (i.e. assign their default value)
-init = tf.global_variables_initializer()
+# init = tf.global_variables_initializer()
+init = tf.compat.v1.global_variables_initializer()
 
 # Start training
-with tf.Session() as sess:
+with tf.compat.v1.Session() as sess:
 
     # Run the initializer
     sess.run(init)
@@ -62,6 +67,8 @@ with tf.Session() as sess:
     training_cost = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
     # print("Training cost=", training_cost, "W=", sess.run(W),  "W_2=", sess.run(W_2),  "W_3=", sess.run(W_3), "b=", sess.run(b), '\n')
     print("Training cost=", training_cost, "W=", sess.run(W),  "W_2=", sess.run(W_2), "b=", sess.run(b), '\n')
+    pred2020 = 12*12*W_2 + 12*W + b
+    print("predict 2020", pred2020)
 
     # Graphic display
     plt.plot(train_X, train_Y, 'ro', label='Original data')
